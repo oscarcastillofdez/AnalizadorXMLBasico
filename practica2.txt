@@ -1,0 +1,42 @@
+Autor: Óscar Castillo Fernández
+
+Analizador léxico:
+  	En la sección de declaraciones, lo primero que se hace es crear una variable para tener en 
+cuenta la línea en que se está analizando: line. Esta variable se aumentará sólo cuando se 
+detecte un salto de línea. A continuación se definen las condiciones de arranque que se 
+utilizaran en el análisis. Se definen cuatro: tres para la cabecera (DEC), las etiquetas (TAG) 
+y los comentarios (COMMENTL) y la última (INIT) que funciona a la vez para el contenido de las 
+etiquetas y como caso general fuera de los mencionados anteriormente. Por último se escriben 
+las declaraciones que se usarán en el análisis.
+	En la sección de reglas se pueden diferenciar 5 partes, cada una destinada a una condición 
+de arranque, excepto la última que es para espacios y cualquier cosa que se pueda saltar las 
+reglas anteriores. Cada parte tiene un arranque y una terminación del entorno definidos por las 
+cadenas que comienzan y terminan el elemento que representan. De esta manera el entorno 
+DEC (cabecera) comienza con la cadena <?xml  y termina con ?>. Esto cambia un poco con el 
+entorno TAG donde la cadena que lo arranca también incluye el nombre de la propia etiqueta. 
+Esto se hizo así para asegurar que no había un espacio entre el inicio de la etiqueta y su 
+nombre, ya que no está permitido. El caso del INIT también es especial, su arranque ocurre 
+cuando se terminan el resto de entornos, esto asegura que la definición de las cadenas que 
+pueden estar dentro de una etiqueta, no afectan al resto de cadenas del xml, debido a las pocas 
+limitaciones que estas tienen, siendo el único caracter que no está permitido el “<”.
+
+Analizador sintáctico:
+	En la sección de declaraciones, en código C, se incluyen la variable de línea del analizador 
+léxico y una definición de un máximo tamaño para los strings, ya que se tratarán como arrays de 
+caracteres. 
+	Las reglas gramaticales comienzan en la raíz donde se detecta si existe o no cabecera y si 
+esa misma se repite varias veces (xml_dec_list). Dentro de la cabecera se comprueba que los 
+valores de dentro son “version” y “encoding”, no se comprueban si las versiones o los encodings 
+son válidos. El contenido del xml después de la cabecera (xml_cont) se divide en tres partes, 
+los comentarios iniciales, la etiqueta raíz y los comentarios finales. Una etiqueta (tag) se 
+define como si inicialización y su fin, donde ambos tienen que tener el mismo nombre, o se 
+detectara un error, salvo en el caso que se cierre de manera prematura con “/>”. Además una 
+etiqueta puede o no tener contenido (tag_cont) y este puede ser a su vez un comentario una 
+cadena o otra etiqueta. En los comentarios se definen los errores como dos guiones juntos y un 
+final incorrecto como “--->”. Cuando se detecta un error se imprime el mensaje con la linea en 
+la que ocurrió y se cierra el programa.
+
+Makefile:
+	El makefile es igual que el dado en el ejemplo de las temperaturas pero con una serie de 
+opciones para probar unos ejemplos de xmls.
+
